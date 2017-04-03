@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  author: Brad Searle
+  description: Modules that use the netconnect python library to retrieve data or modify configuration of networking devices.
+  issue_tracker_url: https://git.nttict.com.au/networking/nc-ansible/issues 
+  license: GPL
+  min_ansible_version: 2.0
+
+  platforms:
+  - name: GenericLinux
+    versions:
+    - any
+
+  categories:
+  - networking
+
+dependencies: []

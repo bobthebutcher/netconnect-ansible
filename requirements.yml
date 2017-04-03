@@ -1,0 +1,5 @@
+---
+- src: https://git.nttict.com.au/networking/nc-ansible
+  version: master
+  name: nc-ansible
+  path: roles
