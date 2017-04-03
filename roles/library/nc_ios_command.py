@@ -4,17 +4,26 @@
 import os
 
 from ansible.module_utils.basic import AnsibleModule
-
-from netconnect.cisco.cisco_driver import CiscoDriver
-from netconnect.exceptions import (
-    LoginTimeoutError,
-    LoginCredentialsError,
-    EnablePasswordError,
-)
-
+try:
+    HAS_NETCONNECT = True
+    from netconnect.cisco.cisco_driver import CiscoDriver
+    from netconnect.exceptions import (
+        LoginTimeoutError,
+        LoginCredentialsError,
+        EnablePasswordError,
+    )
+except ImportError:
+    HAS_NETCONNECT = False
 
 def get_result(device, username, password, enable_password, commands,
                ssh_config_file, ignore_ssh_config, timeout):
+
+    if not HAS_NETCONNECT:
+        result = {
+            'result':  'The netconnect library is required for this module.',
+            'success': False,
+        }
+        return result
 
     if ssh_config_file.startswith('~'):
         ssh_config_file = os.path.expanduser('~/.ssh/config')
@@ -34,7 +43,6 @@ def get_result(device, username, password, enable_password, commands,
         fail_reason = 'enable password error'
 
     results = dev.send_commands(commands)
-    # mgmt_int = results[0].split('\r\n')[1].split(' ')[0]
 
     if fail_reason:
         result = {
@@ -44,7 +52,6 @@ def get_result(device, username, password, enable_password, commands,
     else:
         result = {
             'result':  results,
-            # 'mgmt_int': mgmt_int,
             'success': True,
         }
 
@@ -78,7 +85,7 @@ def main():
                         ssh_config_file, ignore_ssh_config, timeout)
 
     if result['success']:
-        module.exit_json(result=result['result'])  # , mgmt_int=result['mgmt_int'])
+        module.exit_json(result=result['result'])
     else:
         module.fail_json(msg=result['result'])
 
